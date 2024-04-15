@@ -1,10 +1,16 @@
+import { Collection } from "@/components/shared/Collection";
 import { navLinks } from "@/constants";
-import { UserButton } from "@clerk/nextjs";
 import Image from "next/image";
 import Link from "next/link";
 import React from "react";
+import { getAllImages } from "@/lib/actions/image.actions";
 
-const Home = () => {
+const Home = async ({ searchParams }: SearchParamProps) => {
+  const page = Number(searchParams?.page) || 1;
+  const searchQuery = (searchParams?.query as string) || "";
+
+  const images = await getAllImages({ page, searchQuery });
+
   return (
     <>
       <section className="home">
@@ -25,6 +31,15 @@ const Home = () => {
             </Link>
           ))}
         </ul>
+      </section>
+
+      <section className="sm:mt-12">
+        <Collection
+          images={images?.data}
+          page={page}
+          hasSearch={true}
+          totalPages={images?.totalPage}
+        />
       </section>
     </>
   );
